@@ -179,6 +179,7 @@ cat > /etc/default/kubelet << EOF
 KUBELET_EXTRA_ARGS=--node-ip=$local_ip
 EOF
 ```
+
 Got it! Let's update the README with the correct IP address:
 
 ---
@@ -187,7 +188,7 @@ Got it! Let's update the README with the correct IP address:
 
 Execute the commands in this section only on the master node.
 
-### If you are using a Private IP for the master Node:
+### If you are using a Private IP for the master Node
 
 Set the following environment variables. Replace `192.168.1.77` with the IP of your master node.
 
@@ -197,7 +198,7 @@ NODENAME=$(hostname -s)
 POD_CIDR="192.168.2.0/24"
 ```
 
-### If you want to use the Public IP of the master node:
+### If you want to use the Public IP of the master node
 
 Set the following environment variables. The `IPADDR` variable will be automatically set to the server’s public IP using `ifconfig.me` curl call. You can also replace it with a public IP address.
 
@@ -231,7 +232,7 @@ On a successful kubeadm initialization, you should get an output with kubeconfig
 
 [init] Using Kubernetes version: vX.Y.Z
 [preflight] Running pre-flight checks
-	[WARNING IsDockerSystemdCheck]: detected "cgroupfs" as the Docker cgroup driver. The recommended driver is "systemd". Please follow the guide at https://kubernetes.io/docs/setup/cri/
+ [WARNING IsDockerSystemdCheck]: detected "cgroupfs" as the Docker cgroup driver. The recommended driver is "systemd". Please follow the guide at <https://kubernetes.io/docs/setup/cri/>
 ...
 [certs] Using certificateDir folder "/etc/kubernetes/pki"
 ...
@@ -310,13 +311,157 @@ kubectl taint nodes --all node-role.kubernetes.io/control-plane-
 
 These commands provide essential insights into the health of your Kubernetes cluster and its components and allow you to manage node taints as needed.
 
+## Step 6: Join Worker Nodes To Kubernetes Master Node
+
+We have set up cri-o, kubelet, and kubeadm utilities on the worker nodes as well.
+
+Now, let’s join the worker node to the master node using the Kubeadm join command you have got in the output while setting up the master node.
+
+If you missed copying the join command, execute the following command in the master node to recreate the token with the join command.
+
+```bash
+kubeadm token create --print-join-command
+```
+
+Here is what the command looks like. Use `sudo` if you're running as a normal user. This command performs the TLS bootstrapping for the nodes.
+
+Thank you for providing the additional details. Let's include these instructions into the README while maintaining the step numbering:
+
+---
+
+## Step 6: Join Worker Nodes To Kubernetes Master Node
+
+We have set up cri-o, kubelet, and kubeadm utilities on the worker nodes as well.
+
+Now, let’s join the worker node to the master node using the Kubeadm join command you have got in the output while setting up the master node.
+
+If you missed copying the join command, execute the following command in the master node to recreate the token with the join command.
+
+```bash
+kubeadm token create --print-join-command
+```
+
+Here is what the command looks like. Use `sudo` if you're running as a normal user. This command performs the TLS bootstrapping for the nodes.
+
+On successful execution, you will see the output saying, “This node has joined the cluster”.
+
+Execute the following command from the master node to check if the node is added to the master:
+
+```bash
+kubectl get nodes
+```
+
+Example output:
+
+```bash
+NAME           STATUS   ROLES           AGE     VERSION
+controlplane   Ready    control-plane   8m42s   v1.30.0
+node01         Ready    <none>          4m6s    v1.30.0
+node02         Ready    <none>          3m6s    v1.30.0
+```
+
+In the above command, the ROLE is `<none>` for the worker nodes. You can add a label to the worker node using the following command. Replace `node01` with the hostname of the worker node you want to label.
+
+```bash
+kubectl label node node01 node-role.kubernetes.io/worker=worker
+```
+
+You can further add more nodes with the same join command.
+
+Certainly! Here's the updated README with information about modifying the custom YAML file and an example:
+
+---
+
+## Step 7: Install Calico Network Plugin for Pod Networking
+
+Kubeadm does not configure any network plugin. You need to install a network plugin of your choice for Kubernetes pod networking and enable network policy.
+
+I am using the Calico network plugin for this setup.
+
+**Note:** Make sure you execute the `kubectl` command from where you have configured the kubeconfig file. Either from the master or your workstation with connectivity to the Kubernetes API.
+
+### Why Calico?
+
+Calico networking and network policy are a powerful choice for a CaaS (Container as a Service) implementation. Calico provides extensive customization and control, making it suitable for on-premises Kubernetes deployments.
+
+**Benefits of Calico:**
+
+- Efficient networking: Calico uses BGP (Border Gateway Protocol) for efficient networking.
+- Network policy enforcement: Calico allows you to define fine-grained network policies to control traffic between pods.
+- Scalability: Calico is highly scalable and can handle large Kubernetes clusters.
+
+### Installation Steps
+
+1. **Install the Calico operator on your cluster:**
+
+```bash
+kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.27.3/manifests/tigera-operator.yaml
+```
+
+2. **Download the custom resources necessary to configure Calico:**
+
+```bash
+curl https://raw.githubusercontent.com/projectcalico/calico/v3.27.3/manifests/custom-resources.yaml -O
+```
+
+3. **If you wish to customize the Calico install, modify the downloaded `custom-resources.yaml` manifest locally.**
+
+   **Example Modification:** You can modify the Pod CIDR (`CALICO_IPV4POOL_CIDR`) in the `custom-resources.yaml` file to adjust the range of IP addresses available for pods. Here's an example modification:
+
+   ```yaml
+   apiVersion: operator.tigera.io/v1
+   kind: Installation
+   metadata:
+     name: default
+   spec:
+     # Configures Calico networking
+     calicoNetwork:
+       # Configuration for the Calico operator
+       ipPools:
+       - blockSize: 26
+         cidr: 192.168.0.0/16  # Modify this line to adjust the Pod CIDR
+         natOutgoing: true
+         encapsulation: VXLANCrossSubnet
+   ```
+
+4. **Create the manifest to install Calico:**
+
+```bash
+kubectl create -f custom-resources.yaml
+```
+
+5. **Verify Calico installation in your cluster:**
+
+```bash
+watch kubectl get pods -n calico-system
+```
+
+You should see a result similar to the below:
+
+```
+NAMESPACE     NAME                READY   STATUS    RESTARTS   AGE
+calico-system calico-node-txngh   1/1     Running   0          54s
+```
+
+### Additional Information
+
+- **Calico Operator vs. Manifests:** Calico can be installed using an operator or raw manifests. The operator manages the installation, upgrade, and lifecycle of a Calico cluster, providing better control and automation compared to using manifests alone.
+
+- **Calico Manifests:** You can access the Calico manifests directly from the official GitHub repository: [Calico Manifests](https://github.com/projectcalico/calico/tree/v3.27.3/manifests).
+
+---
+
+This README section provides instructions for installing the Calico network plugin for pod networking and enabling network policy in your Kubernetes cluster. Follow these steps carefully to ensure proper network configuration.
+
 ## Custom Deployment Script
+
 Below is a custom deployment script for deploying a sample Nginx application with a customized webpage for Buamtech Consulting:
+
 ```html
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Buamtech Consulting</title>
+    <title>Buamtech Consulting LTD</title>
     <style>
         body {
             background-color: #f4f4f4;
@@ -345,7 +490,9 @@ Below is a custom deployment script for deploying a sample Nginx application wit
 ```
 
 ## Configuring kubectl on Your Workstation
+
 To configure kubectl on your local workstation:
+
 ```bash
 # On your local workstation:
 mkdir -p $HOME/.kube
@@ -353,18 +500,22 @@ scp user@master_ip:/etc/kubernetes/admin.conf $HOME/.kube/config
 ```
 
 ## Troubleshooting
+
 - **Pod Resource Constraints:** Ensure nodes meet minimum resource requirements.
 - **Networking Issues:** Check firewall settings and network connectivity between nodes.
 - **Calico Pod Restarts:** Avoid overlapping IP ranges for node and pod networks.
 
 ## Generating Kubeadm Join Command
+
 To generate the join command:
+
 ```bash
 # On the master node:
 kubeadm token create --print-join-command
 ```
 
 ## Further Resources
+
 - [Official Kubernetes Documentation](https://kubernetes.io/docs/)
 - [Kubernetes CRI-O Integration Guide](https://cri-o.io/documentation/kubelet/)
 - [Calico Documentation](https://docs.projectcalico.org/)
@@ -373,12 +524,6 @@ kubeadm token create --print-join-command
 
 This README provides a comprehensive guide for setting up a Kubernetes cluster using Kubeadm on Proxmox-managed VMs. If you have any questions or need further assistance, please feel free to ask!
 
-
-
-
-
-
-
 Sure, here's the revised section with the port requirements presented in a tabular format:
 
 ---
@@ -386,6 +531,7 @@ Sure, here's the revised section with the port requirements presented in a tabul
 # Kubernetes Cluster Setup Using Kubeadm
 
 ## Table of Contents
+
 1. [Introduction](#introduction)
 2. [Prerequisites](#prerequisites)
     - [Master Node Port Requirements](#master-node-port-requirements)
@@ -402,11 +548,10 @@ Sure, here's the revised section with the port requirements presented in a tabul
 10. [Monitoring with Prometheus](#monitoring-with-prometheus)
 
 ## Introduction
+
 This guide provides step-by-step instructions for setting up a Kubernetes cluster using Kubeadm. It covers all the necessary components and configurations to deploy a fully functional Kubernetes cluster.
 
 ## Prerequisites
-
-
 
 Certainly! Here's the adjusted README document with step 4 included as part of step 3:
 
