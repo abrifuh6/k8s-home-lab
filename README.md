@@ -259,15 +259,56 @@ Alternatively, if you are the **root user**, you can run:
   export KUBECONFIG=/etc/kubernetes/admin.conf
 ```
 
-You should now deploy a pod network to the cluster.
-Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
-  https://kubernetes.io/docs/concepts/cluster-administration/addons/
-
 Then you can join any number of worker nodes by running the following on each as root:
+
+**NOTE**
+ it's crucial to highlight that the values provided in the `kubeadm join` command, such as the token and the discovery token CA cert hash, will vary based on each user's unique configuration. Let's add a note to emphasize this:
+
+```bash
+# The following command is an example of how to join worker nodes to the Kubernetes cluster.
+# Note: The values provided (token, discovery token CA cert hash) are unique to your cluster and will differ from the example.
+# Make sure to replace them with the actual values obtained during the initialization of your Kubernetes cluster.
 
 kubeadm join 192.168.1.77:6443 --token abcdef.1234567890abcdef \
     --discovery-token-ca-cert-hash sha256:1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+```
 
+This note will remind users that they need to replace these values with their own specific values obtained during their Kubernetes cluster setup.
+
+After initializing the Kubernetes control plane and configuring `kubectl`, you can verify the setup by executing the following command:
+
+```bash
+kubectl get po -n kube-system
+```
+
+The output you expect to see after running this command is:
+
+```
+NAME                                READY   STATUS    RESTARTS   AGE
+coredns-xxxxxxxxxx-xxxxx            0/1     Pending   0          xxm
+coredns-xxxxxxxxxx-xxxxx            0/1     Pending   0          xxm
+```
+
+This output indicates that the two CoreDNS pods are in a pending state. This is expected behavior before installing the network plugin. Once you install the network plugin, these pods should transition to a running state.
+
+To verify the health statuses of all cluster components and get cluster information, use the following commands:
+
+```bash
+# Verify all cluster component health statuses
+kubectl get --raw='/readyz?verbose'
+
+# Get cluster information
+kubectl cluster-info
+```
+
+Additionally, if you want to allow apps to be scheduled on the master node, you can remove the taint on the master node using:
+
+```bash
+# Allow apps to be scheduled on the master node
+kubectl taint nodes --all node-role.kubernetes.io/control-plane-
+```
+
+These commands provide essential insights into the health of your Kubernetes cluster and its components and allow you to manage node taints as needed.
 
 ## Custom Deployment Script
 Below is a custom deployment script for deploying a sample Nginx application with a customized webpage for Buamtech Consulting:
