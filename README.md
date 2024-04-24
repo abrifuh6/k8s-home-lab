@@ -8,19 +8,29 @@ Absolutely! Here's the table of contents formatted for inclusion in the README:
 ## Table of Contents
 
 [Introduction](#introduction)
+
 [Step 1: Enable iptables Bridged Traffic on all the Nodes](#step-1-enable-iptables-bridged-traffic-on-all-the-nodes)
+
 [Step 2: Disable swap on all the Nodes](#step-2-disable-swap-on-all-the-nodes)
+
 [Step 3: Install CRI-O Runtime On All The Nodes](#step-3-install-cri-o-runtime-on-all-the-nodes)
+
 [Step 4: Install Kubeadm & Kubelet & Kubectl on all Nodes](#step-4-install-kubeadm--kubelet--kubectl-on-all-nodes)
+
 [Step 5: Initialize Kubeadm On Master Node To Setup Control Plane](#step-5-initialize-kubeadm-on-master-node-to-setup-control-plane)
+
 [Step 6: Join Worker Nodes To Kubernetes Master Node](#step-6-join-worker-nodes-to-kubernetes-master-node)
+
 [Step 7: Install Calico Network Plugin for Pod Networking](#step-7-install-calico-network-plugin-for-pod-networking)
+
 [Step 8 (Optional): Setup Kubernetes Metrics Server](#step-8-optional-setup-kubernetes-metrics-server)
+
 [Deploying a Sample Nginx Application and Accessing it Over NodePort](#deploying-a-sample-nginx-application-and-accessing-it-over-nodeport)
 
 ---
 
 This table of contents provides quick navigation to each step in the README, facilitating easy access to specific sections for readers.
+
 ## Introduction
 
 This README provides detailed instructions and scripts for setting up a Kubernetes cluster using Kubeadm on Proxmox-managed VMs(in my case). The setup utilizes Ubuntu 22.04 LTS, CRI-O as the container runtime, and Calico for networking(CNI). This guide includes all necessary steps, prerequisites, and troubleshooting tips.
@@ -473,4 +483,4 @@ calico-system calico-node-txngh   1/1     Running   0          54s
 
 - Check the `metrics-server` directory if you will like to configure and install one in your setup.
 
-- 
+-
