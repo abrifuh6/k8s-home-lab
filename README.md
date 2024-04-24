@@ -261,17 +261,19 @@ All the other steps are the same as configuring the master node with a private I
 On a successful kubeadm initialization, you should get an output with kubeconfig file location and the join command with the token. Copy that and save it to the file. We will need it for joining the worker node to the master.
 
 [init] Using Kubernetes version: vX.Y.Z
+
 [preflight] Running pre-flight checks
+
  [WARNING IsDockerSystemdCheck]: detected "cgroupfs" as the Docker cgroup driver. The recommended driver is "systemd". Please follow the guide at <https://kubernetes.io/docs/setup/cri/>
-...
+
 [certs] Using certificateDir folder "/etc/kubernetes/pki"
-...
+
 [kubeconfig] Writing "admin.conf" kubeconfig file
-...
+
 [addons] Applied essential addon: CoreDNS
-...
+
 [addons] Applied essential addon: kube-proxy
-...
+
 Your Kubernetes control-plane has initialized successfully!
 
 To start using your cluster(interact with API-Sever), you need to run the following as a **regular user:**
