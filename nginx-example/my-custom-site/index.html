@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abri Fuh's Professional Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="buamtech.css">
+    <header>
+        <div class="header-content">
+            <h1>Abri Fuh's Tech Journey</h1>
+            <nav>
+                <ul>
+                    <li><a href="#projects">Projects</a></li>
+                    <li><a href="#story">My Story</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <main>
+        <section id="projects">
+            <h2>My Projects</h2>
+            <p>Here are some projects I've worked on, showcasing my skills in development and DevOps:</p>
+            <ul>
+                <li><a href="https://github.com/yourusername/project1">Project 1</a></li>
+                <li><a href="https://github.com/yourusername/project2">Project 2</a></li>
+                <li><a href="https://github.com/yourusername/project3">Project 3</a></li>
+            </ul>
+        </section>
+        <section id="story">
+            <h2>My Journey</h2>
+            <p>From dreams of flight to navigating the realms of technology, my journey is nothing short of a movie script. Born with the aspiration to soar the skies as a pilot, I moved to Canada, immersing myself in aviation studies. But life, as it often does, had other plans. Struggling to fund my education, I worked tirelessly as an order selector in a warehouse, balancing tuition, rent, and a humble life with a $650 car.</p>
+            <p>As financial hurdles mounted, my dream seemed increasingly distant, leading to a period of profound despair. Amidst this, I turned to forex trading, hoping for a windfall that would reignite my aspirations. However, reality proved harsh, and the markets unforgiving.</p>
+            <p>Change beckoned when I reflected on my academic strengths during high school, particularly in ICT. This introspection sparked a pivot towards technology. Starting with a role in help desk support, I delved into Google's IT support certification but soon realized my true passion lay elsewhere. Transitioning through web development, I finally found my calling in DevOps, marking the beginning of an exciting new chapter in my life.</p>
+            <p>Today, I stand proud, a testament to resilience and adaptability, continuously evolving in the ever-changing tech landscape.</p>
+        </section>
+        <section id="contact">
+            <h2>Contact Me</h2>
+            <p>Email: <a href="mailto:abrifuh6@gmail.com">abrifuh6@gmail.com</a></p>
+            <p>Phone: <a href="tel:+12366688271">+1 (236) 668-8271</a></p>
+            <p>Location: <a href="https://maps.google.com/?q=British+Columbia,+Canada" target="_blank">British Columbia, Canada</a></p>
+            <form class="contact-form">
+                <input type="text" name="name" placeholder="Your Name" required>
+                <input type="email" name="email" placeholder="Your Email" required>
+                <textarea name="message" placeholder="Your Message" required></textarea>
+                <input type="submit" value="Send Message">
+            </form>
+        </section>
+        
+        
+    </main>
+    <footer>
+        <p>&copy; 2017-<span id="current-year"></span> Abri Fuh. All rights reserved.</p>
+    </footer>
+    <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+    </script>
+    
+</body>
+</html>
