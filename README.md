@@ -487,4 +487,4 @@ calico-system calico-node-txngh   1/1     Running   0          54s
 
 - Check the `metrics-server` directory if you will like to configure and install one in your setup.
 
--
+- To test our infrastructure like our loadbalancer(metallb) and our cni(calico) for pod communication, check out the demo app in   `nginx-example` directory.
